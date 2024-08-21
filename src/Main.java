@@ -115,8 +115,21 @@ public class Main {
                 } else {
                     System.out.println("!!! Error: Input only 1 or 2 !!!");
                 }
+<<<<<<< HEAD
             }catch (Exception e){
                 System.out.println("!!! Error: Input only 1 or 2 !!!");
+=======
+                //footer
+                System.out.println("===========================================");
+            }else if (choice == 2){
+                //Display#3 Exit
+                System.out.print("===== SE STORE =====\n" +
+                        "Thank you for using our service :3");
+                break;
+            }else{
+                //A+ Requirement
+                System.out.println( "!!! Error: Input only 1 or 2 !!!");
+>>>>>>> 94c64094fba9dddc1d9f092718454c45ba8c0e8b
             }
         }
     }
