@@ -54,7 +54,7 @@ public class Main {
                 break;
             }else{
                 //A+ Requirement
-                System.out.println("!!! Error: Input only 1 or 2 !!!");
+                System.out.println( "!!! Error: Input only 1 or 2 !!!");
             }
         }
     }
