@@ -9,7 +9,7 @@ public class Product {
         this.id = id;
         this.name = name;
         // Remove the dollar sign and convert the price to a double
-        this.price = Double.parseDouble(price.substring(1));
+        this.price = Double.parseDouble(price.substring(1)) * 34;
         // Convert the quantity to int
         this.quantity = Integer.parseInt(quantity);
         this.type = type;
@@ -33,8 +33,8 @@ public class Product {
         return id;
     }
 
+
     public void printItem() {
-        System.out.printf("%-15s %-15s %-15s",this.name, "$" + this.price, this.quantity);
-        System.out.println();
+        System.out.printf("%-15s %-7.2f %10s \n", this.name, this. price, this.quantity);
     }
 }
