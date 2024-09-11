@@ -5,10 +5,10 @@
 /* Date: 21 Aug 2024 */
 /* Description: a program for showing detail about product in shop */
 /***********************************************************************************/
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -42,7 +42,7 @@ public class Main {
             }
             //เก็บค่าของ member
             ArrayList<Member> members = new ArrayList<>();
-            while (memberScanner.hasNext()){
+            while (memberScanner.hasNext()) {
                 Member importedMember = new Member(memberScanner.next(), memberScanner.next(), memberScanner.next(), memberScanner.next(), memberScanner.next(), memberScanner.next(), memberScanner.next());
                 members.add(importedMember);
             }
@@ -107,16 +107,16 @@ public class Main {
                                     System.out.println("====================");
 
                                     //Menu
-                                    int menuindex = 1;
-                                    System.out.println(menuindex + ". Show Category");
+                                    int menuIndex = 1;
+                                    System.out.println(menuIndex + ". Show Category");
                                     if (members.get(i).getRoleID() == '0') {
-                                        menuindex += 1;
-                                        System.out.println(menuindex + ". Add Member");
+                                        menuIndex += 1;
+                                        System.out.println(menuIndex + ". Add Member");
                                     }
-                                    menuindex += 1;
-                                    System.out.println(menuindex + ". Logout ");
+                                    menuIndex += 1;
+                                    System.out.println(menuIndex + ". Logout ");
                                     System.out.println("====================");
-                                    System.out.print("Select (1-" + menuindex + ") : ");
+                                    System.out.print("Select (1-" + menuIndex + ") : ");
                                     try {
                                         choice = kb.next();
                                         if (choice.equals("1")) {
@@ -127,7 +127,7 @@ public class Main {
                                                 System.out.println();
                                                 int k = 1;
                                                 //Print all categories
-                                                for  (Category category : categories) {
+                                                for (Category category : categories) {
                                                     System.out.printf("%-4s %-15s", k, category.getName());
                                                     System.out.println();
                                                     k++;
@@ -161,13 +161,12 @@ public class Main {
                                                             String exitChoice = kb.next();
                                                             if (exitChoice.equalsIgnoreCase("q")) {
                                                                 break;
-                                                            }
-                                                            else {
+                                                            } else {
                                                                 System.out.println("!!! Error: Input only Q for exit !!!");
                                                             }
                                                         }
                                                     }
-                                                }catch (Exception e){
+                                                } catch (Exception e) {
                                                     System.out.println("!!! Error: Input only 1-" + categories.size() + " or Q for exit !!!");
                                                 }
                                             }
@@ -188,16 +187,9 @@ public class Main {
                                             //Check if the information is correct
                                             if (firstname.length() < 2 || lastname.length() < 2 || inputEmail.length() < 2 || !inputEmail.contains("@") || phoneNumber.length() < 10) {
                                                 System.out.println("Error! - Your Information are Incorrect!");
-                                            }else {
+                                            } else {
                                                 //find latest member id
-                                                int latestID = 0;
-                                                for (int j = 0; j < members.size(); j++) {
-                                                    if (Integer.parseInt(members.get(j).id) > latestID) {
-                                                        latestID = Integer.parseInt(members.get(j).id);
-                                                    }
-                                                }
-                                                //บวกเลข 1 ให้กับ latestID
-                                                latestID++;
+                                                int latestID = getLatestID(members);
                                                 //แปลง latestID เป็น string
                                                 String stringId = Integer.toString(latestID);
                                                 //สร้าง password ใหม่
@@ -214,47 +206,46 @@ public class Main {
                                                     //true คือเพื่อให้เขียนต่อจากข้อมูลเก่า (append)
                                                     FileWriter fileWriter = new FileWriter(memberFile, true);
                                                     //เขียนข้อมูลลงไฟล์
-                                                    fileWriter.write("\n"+ newMember.id + "\t" + newMember.Firstname + "\t" + newMember.Lastname + "\t" + newMember.Email + "\t" + newMember.rawPassword + "\t" + newMember.PhoneNumber + "\t" + newMember.point);
+                                                    fileWriter.write("\n" + newMember.id + "\t" + newMember.Firstname + "\t" + newMember.Lastname + "\t" + newMember.Email + "\t" + newMember.rawPassword + "\t" + newMember.PhoneNumber + "\t" + newMember.point);
                                                     fileWriter.close();
                                                 } catch (Exception e) {
                                                     System.out.println("!!! Error: Cannot write to file !!!");
                                                 }
-                                                }
                                             }
+                                        }
                                         //Logout สำหรับสมาชิกทั่วไป
                                         else if (choice.equals("2") && members.get(i).getRoleID() != '0') {
-                                            System.out.print("Logging out: See you!, "+ members.get(i).Firstname + ". \n");
+                                            System.out.print("Logging out: See you!, " + members.get(i).Firstname + ". \n");
                                             break;
                                         }
                                         //Logout สำหรับ staff
                                         else if (choice.equals("3") && members.get(i).getRoleID() == '0') {
                                             //Display Exit quote
-                                            System.out.print("Logging out: See you!, "+ members.get(i).Firstname + ". \n");
+                                            System.out.print("Logging out: See you!, " + members.get(i).Firstname + ". \n");
                                             break;
+                                        } else {
+                                            System.out.println("!!! Error: Input only 1-" + menuIndex + " !!!");
                                         }
-                                        else {
-                                            System.out.println("!!! Error: Input only 1 or" + menuindex + " !!!");
-                                        }
-                                    }catch (Exception e){
-                                        System.out.println("!!! Error: Input only 1 or" + menuindex + " !!!");
+                                    } catch (Exception e) {
+                                        System.out.println("!!! Error: Input only 1-" + menuIndex + " !!!");
                                     }
                                 }
                                 break;
                             }
                         }
                         //ถ้าไม่พบ account
-                        if (!accFound){
+                        if (!accFound) {
                             failCount++;
                             //แจ้ง
                             System.out.println("Error! - Email or Password is Incorrect (" + failCount + ")");
-                            if (failCount == 3){
+                            if (failCount == 3) {
                                 //ครบ 3 เด้ง
                                 System.out.println("Sorry, Please try again later :(\n");
                                 break;
                             }
                         }
                         //ถ้าพบ account ก็ออก loop
-                        if (accFound){
+                        if (accFound) {
                             break;
                         }
                     }
@@ -266,13 +257,25 @@ public class Main {
                     System.out.println("!!! Error: Input only 1 or 2 !!!");
                 }
             }
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             System.out.println("!!! Error: File not found !!!");
             System.exit(0);
         }
     }
-    public static String generatePassword(){
+    //หา id ท้ายสุดในไพล์ แล้วบวกเพิ่ม 1
+    private static int getLatestID(ArrayList<Member> members) {
+        int latestID = 0;
+        for (int j = 0; j < members.size(); j++) {
+            if (Integer.parseInt(members.get(j).id) > latestID) {
+                latestID = Integer.parseInt(members.get(j).id);
+            }
+        }
+        //บวกเลข 1 ให้กับ latestID
+        latestID++;
+        return latestID;
+    }
+
+    public static String generatePassword() {
         //ไว้เก็บ passcode 6 หลักที่เป็นตัวเลข
         StringBuilder passcode = new StringBuilder();
         //ไว้สุ่ม
@@ -284,8 +287,18 @@ public class Main {
         }
         //สร้าง password 19 ตัว
         StringBuilder password = new StringBuilder();
-        for (int i = 0; i < 19; i++){
+        for (int i = 0; i < 19; i++) {
             //สุ่มตัวอักษร A-Z มาต่อกัน 19 ตัว
+            //สุ่มเลขมาแล้วแปลงเป็น char แล้วเอามาต่อกัน
+            /*  คำอธิบายจาก GitHub Copilot:
+                The generated random integer is then added to the ASCII value
+                of the uppercase letter 'A'. In ASCII, 'A' has a value of 65.
+                By adding the random integer (0-25) to 65, the result is an
+                integer value that corresponds to an uppercase letter in the
+                ASCII table. For example, if the random integer is 0, the
+                resulting character will be 'A'; if the random integer is 1,
+                the resulting character will be 'B', and so on up to 'Z'.
+             */
             password.append((char) (random.nextInt(26) + 'A'));
         }
         //แบ่ง password ออกเป็นตัวๆ
