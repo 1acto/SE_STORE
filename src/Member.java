@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 public class Member {
     String id;
     String Firstname;
@@ -24,14 +22,12 @@ public class Member {
         return this.Password.equals(password);
     }
     String decryptPassword(String password){
-        StringBuilder sb = new StringBuilder();
-        sb.append(password.charAt(9));
-        sb.append(password.charAt(10));
-        sb.append(password.charAt(13));
-        sb.append(password.charAt(14));
-        sb.append(password.charAt(15));
-        sb.append(password.charAt(16));
-        return sb.toString();
+        return String.valueOf(password.charAt(9)) +
+                password.charAt(10) +
+                password.charAt(13) +
+                password.charAt(14) +
+                password.charAt(15) +
+                password.charAt(16);
     }
     //get first
     public String getFirstname() {
@@ -67,8 +63,5 @@ public class Member {
     }
     char getRoleID() {
         return rawPassword.charAt(6);// `getRoleID Frank do already//
-    }
-    public String getId() {
-        return id;
     }
 }
