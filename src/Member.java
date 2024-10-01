@@ -38,6 +38,10 @@ public class Member {
         return Firstname;
     }
 
+    public String getLastname() {
+        return Lastname;
+    }
+
     public String getEmail() {
         return Email;
     }
@@ -63,5 +67,8 @@ public class Member {
     }
     char getRoleID() {
         return rawPassword.charAt(6);// `getRoleID Frank do already//
+    }
+    public String getId() {
+        return id;
     }
 }
