@@ -239,7 +239,6 @@ public class Main {
                                     }
                                     //edit product
                                     else if (choice.equals("4")) {
-                                        while (true){
                                         //edit product
                                         //print all product
                                         System.out.println("===== SE STORE's Product =====");
@@ -254,7 +253,7 @@ public class Main {
                                             System.out.println("!!! Error: Input only 1-" + products.size() + " or Q for exit !!!");
                                         } else {
                                             Product selectedProduct = products.get(Integer.parseInt(productChoice) - 1);
-                                            System.out.println("===== Edit info of " + selectedProduct.getName() + " ===== \n" + "Type new info or Hyphen (-) for none edit. \n");
+                                            System.out.println("===== Edit info of " + selectedProduct.getName() + " ===== \n" + "Type new info or Hyphen (-) for none edit.");
                                             System.out.print("Name: ");
                                             String newName = kb.next();
                                             System.out.print("Quantity (+ or -) : ");
@@ -271,23 +270,27 @@ public class Main {
                                             if (!newQuantity.equals("-")) {
                                                 //check for + or -
                                                 if (newQuantity.charAt(0) == '+' || newQuantity.charAt(0) == '-') {
-                                                    selectedProduct.setQuantity(Integer.parseInt(newQuantity.substring(1)), newQuantity.charAt(0));
+                                                    if (newQuantity.contains(".")) {
+                                                        System.out.println("Error! - Your Information are Incorrect!");
+                                                    }else {
+                                                        selectedProduct.setQuantity(Integer.parseInt(newQuantity.substring(1)), newQuantity.charAt(0));
+                                                        products.set(Integer.parseInt(productChoice) - 1, selectedProduct);
+                                                        //write all product to file
+                                                        try (FileWriter fileWriter = new FileWriter("src/PRODUCT.txt")) {
+                                                            for (Product product : products) {
+                                                                fileWriter.write(product.getId() + "\t" + product.getName() + "\t" + product.getStringPrice() + "\t" + product.getQuantity() + "\t" + product.getType() + "\n");
+                                                            }
+                                                        } catch (Exception e) {
+                                                            System.out.println("!!! Error: Cannot write to file !!!");
+                                                        }
+                                                        System.out.println("Success - " +  selectedProduct.getName() +" has been updated!");
+                                                    }
+
                                                 } else {
                                                     System.out.println("Error! - Your Information are Incorrect!");
                                                 }
 
                                             }
-                                            products.set(Integer.parseInt(productChoice) - 1, selectedProduct);
-                                            //write all product to file
-                                            try (FileWriter fileWriter = new FileWriter("src/PRODUCT.txt")) {
-                                                for (Product product : products) {
-                                                    fileWriter.write(product.getId() + "\t" + product.getName() + "\t" + product.getStringPrice() + "\t" + product.getQuantity() + "\t" + product.getType() + "\n");
-                                                }
-                                            } catch (Exception e) {
-                                                System.out.println("!!! Error: Cannot write to file !!!");
-                                            }
-                                            System.out.println("Edit product successfully!");
-                                        }
                                         }
                                     }
                                 }
