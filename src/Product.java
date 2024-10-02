@@ -2,7 +2,7 @@ public class Product {
     private final String id;
     private String name;
     private double price;
-    private final int quantity;
+    private int quantity;
     private final String type;
 
     public Product(String id ,String name, String price, String quantity, String type) {
@@ -18,6 +18,7 @@ public class Product {
     public String getName() { return name; }
     public void setName(String newName) { this.name = newName; }
     public double getPrice() { return price; }
+    public String getStringPrice() { return "$" + String.format("%.2f", getPrice() / 34); }
     public void setPrice(double price) { this.price = price; }
     public int getQuantity() {
         return quantity;
@@ -41,6 +42,18 @@ public class Product {
             System.out.printf("%-15s %-6.2f (%-1.2f) \t %-1d \n", this.name, discountPrice, this.price, this.quantity);
         } else {
             System.out.printf("%-15s %-7.2f %10s \n", this.name, this.price, this.quantity);
+        }
+    }
+
+    public void setQuantity(int i , char operator) {
+        if (operator == '+'){
+            this.quantity += i;
+        }else {
+            if (quantity - i >= 0){
+                this.quantity -= i;
+            } else {
+                this.quantity = 0;
+            }
         }
     }
 }

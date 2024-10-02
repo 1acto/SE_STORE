@@ -239,6 +239,7 @@ public class Main {
                                     }
                                     //edit product
                                     else if (choice.equals("4")) {
+                                        while (true){
                                         //edit product
                                         //print all product
                                         System.out.println("===== SE STORE's Product =====");
@@ -248,38 +249,45 @@ public class Main {
                                         String productChoice = kb.next();
                                         if (productChoice.equalsIgnoreCase("q")) {
                                             break;
-                                        } else if (Integer.parseInt(productChoice) > products.size() || Integer.parseInt(productChoice) < 1) {
+                                        }
+                                        else if (Integer.parseInt(productChoice) > products.size() || Integer.parseInt(productChoice) < 1) {
                                             System.out.println("!!! Error: Input only 1-" + products.size() + " or Q for exit !!!");
                                         } else {
                                             Product selectedProduct = products.get(Integer.parseInt(productChoice) - 1);
                                             System.out.println("===== Edit info of " + selectedProduct.getName() + " ===== \n" + "Type new info or Hyphen (-) for none edit. \n");
-                                            System.out.print("Price ($ or ฿) : ");
+                                            System.out.print("Name: ");
                                             String newName = kb.next();
-                                            System.out.print("Enter Price: ");
-                                            String newPrice = kb.next();
+                                            System.out.print("Quantity (+ or -) : ");
+                                            String newQuantity = kb.next();
                                             //check for -
                                             if (!newName.equals("-")) {
-                                                selectedProduct.setName(newName);
-                                            }
-                                            if (!newPrice.equals("-")) {
-                                                //check for $ or ฿
-                                                if (newPrice.contains("$")) {
-                                                    selectedProduct.setPrice(Double.parseDouble(newPrice.substring(1)) * 34);
+                                                if (newName.length() <= 1) {
+                                                    System.out.println("Error! - Your Information are Incorrect!");
                                                 } else {
-                                                    selectedProduct.setPrice(Double.parseDouble(newPrice.substring(1)));
+                                                    selectedProduct.setName(newName);
                                                 }
+
+                                            }
+                                            if (!newQuantity.equals("-")) {
+                                                //check for + or -
+                                                if (newQuantity.charAt(0) == '+' || newQuantity.charAt(0) == '-') {
+                                                    selectedProduct.setQuantity(Integer.parseInt(newQuantity.substring(1)), newQuantity.charAt(0));
+                                                } else {
+                                                    System.out.println("Error! - Your Information are Incorrect!");
+                                                }
+
                                             }
                                             products.set(Integer.parseInt(productChoice) - 1, selectedProduct);
                                             //write all product to file
                                             try (FileWriter fileWriter = new FileWriter("src/PRODUCT.txt")) {
                                                 for (Product product : products) {
-                                                    String tempPrice = "$" + String.format("%.2f", product.getPrice() / 34);
-                                                    fileWriter.write(product.getId() + "\t" + product.getName() + "\t" + tempPrice + "\t" + product.getQuantity() + "\t" + product.getType() + "\n");
+                                                    fileWriter.write(product.getId() + "\t" + product.getName() + "\t" + product.getStringPrice() + "\t" + product.getQuantity() + "\t" + product.getType() + "\n");
                                                 }
                                             } catch (Exception e) {
                                                 System.out.println("!!! Error: Cannot write to file !!!");
                                             }
                                             System.out.println("Edit product successfully!");
+                                        }
                                         }
                                     }
                                 }
