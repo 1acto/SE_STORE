@@ -1,0 +1,10 @@
+3000	Fruits & Vegetables
+3001	Dairy Products
+3002	Meat & Seafood
+3003	Bakery
+3004	Snacks
+3005	Beverages
+3006	Cleaning Supplies
+3007	Pet Supplies
+3008	Stationery
+3009	Electronics
