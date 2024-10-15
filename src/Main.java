@@ -8,22 +8,20 @@
  * Description: Store Management System.
  */
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.*;
 import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        //Prepare to read file
+            //Setting up
         try {
             //Set up scanner
             Scanner productScanner = new Scanner(new File("src/PRODUCT.txt"));
             Scanner categoryScanner = new Scanner(new File("src/CATEGORY.txt"));
             Scanner memberScanner = new Scanner(new File("src/MEMBER.txt"));
-            Scanner kb = new Scanner(System.in);
+            Scanner userInput = new Scanner(System.in);
 
-            //Read all product
+            //Read product.txt
             ArrayList<Product> products = new ArrayList<>();
             while (productScanner.hasNextLine()) {
                 String line = productScanner.nextLine();
@@ -33,14 +31,16 @@ public class Main {
                 }
             }
             productScanner.close();
-            //Read all category
+
+            //Read category.txt
             ArrayList<Category> categories = new ArrayList<>();
             while (categoryScanner.hasNextLine()) {
                 String[] split = categoryScanner.nextLine().split("\t");
                 if (split.length >= 2) { categories.add(new Category(split[0], split[1])); }
             }
             categoryScanner.close();
-            //Read all member
+
+            //Read member.txt
             ArrayList<Member> members = new ArrayList<>();
             while (memberScanner.hasNext()) {
                 String[] split = memberScanner.nextLine().split("\t");
@@ -51,14 +51,14 @@ public class Main {
             //Main Program
             while (true) {
                 System.out.print("\n===== SE STORE =====\n1. Login\n2. Exit\n====================\nSelect (1-2) : ");
-                String choice = kb.next();
+                String choice = userInput.next();
                 if (choice.equals("1")) {
                     int failCount = 0;
                     while (true) {
                         System.out.print("\n===== LOGIN =====\nEmail: ");
-                        String email = kb.next();
+                        String email = userInput.next();
                         System.out.print("Password: ");
-                        String password = kb.next();
+                        String password = userInput.next();
                         System.out.println("====================");
                         boolean accFound = false;
                         for (Member member : members) {
@@ -95,11 +95,15 @@ public class Main {
                                         menuIndex++;
                                         System.out.println(menuIndex + ". Edit Product");
                                     }
+                                    if(role != 0){
+                                        menuIndex++;
+                                        System.out.println(menuIndex + ". Order Product");
+                                    }
                                     menuIndex++;
                                     System.out.println(menuIndex + ". Logout ");
                                     System.out.println("====================");
                                     System.out.print("Select (1-" + menuIndex + ") : ");
-                                    choice = kb.next();
+                                    choice = userInput.next();
                                     //show category
                                     if (choice.equals("1")) {
                                         while (true) {
@@ -112,7 +116,7 @@ public class Main {
                                             }
                                             System.out.println("===========================================");
                                             System.out.print("Select Category to Show Product (1-" + categories.size() + ") or Q for exit \nselect : ");
-                                            String categoryChoice = kb.next();
+                                            String categoryChoice = userInput.next();
                                             if (categoryChoice.equalsIgnoreCase("q")) break;
                                             try {
                                                 int categoryIndex = Integer.parseInt(categoryChoice) - 1;
@@ -127,7 +131,7 @@ public class Main {
                                                     printItem(productLists, role);
                                                     while (true) {
                                                         System.out.print("1. Show Name By DESC\n2. Show Quantity By ASC\nor Press Q to Exit : ");
-                                                        String sortChoice = kb.next();
+                                                        String sortChoice = userInput.next();
                                                         if (sortChoice.equals("1")) {
                                                             productLists.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
                                                             System.out.println("============ " + categories.get(categoryIndex).getName() + " ============");
@@ -151,13 +155,13 @@ public class Main {
                                     //add member
                                     else if (choice.equals("2") && role == 0) {
                                         System.out.print("===== Add Member =====\nEnter Firstname: ");
-                                        String firstname = kb.next();
+                                        String firstname = userInput.next();
                                         System.out.print("Enter Lastname: ");
-                                        String lastname = kb.next();
+                                        String lastname = userInput.next();
                                         System.out.print("Enter Email: ");
-                                        String inputEmail = kb.next();
+                                        String inputEmail = userInput.next();
                                         System.out.print("Enter Phone Number: ");
-                                        String phoneNumber = kb.next();
+                                        String phoneNumber = userInput.next();
                                         if (firstname.length() < 2 || lastname.length() < 2 || inputEmail.length() < 2 || !inputEmail.contains("@") || phoneNumber.length() < 10) {
                                             System.out.println("Error! - Your Information are Incorrect!");
                                         } else {
@@ -174,10 +178,100 @@ public class Main {
                                             }
                                         }
                                     }
-                                    //exit
-                                    else if (choice.equals("2") || (choice.equals("5") && role == 0)) {
-                                        System.out.print("Logging out: See you!, " + member.Firstname + ". \n");
-                                        break;
+                                    //order product
+                                    else if (choice.equals("2") ) {
+                                        printItem(products, role);
+                                        ArrayList<Product> charts = new ArrayList<>();
+                                        System.out.print("""
+                                                    Enter the product number followed by the quantity.
+                                                    1. How to Order
+                                                    2. List Products
+                                                    Q. Exit
+                                                    """);
+                                        while (true) {
+                                            System.out.print("Enter : ");
+                                            String orderChoice = userInput.next();
+                                            if (orderChoice.equals("1")) {
+                                                System.out.println("""
+                                                        How to Order:
+                                                        • To Add Product:
+                                                        \tEnter the product number followed by the quantity.
+                                                        \tExample: 1 50 (Adds 50 chips)
+                                                        • To Adjust Quantity:
+                                                        \t+ to add more items: 1 +50 (Adds 50 more chips)
+                                                        \t- to reduce items: 1 -50 (Removes 50 chips)""");
+                                            }
+                                            else if (orderChoice.equals("2")) {
+                                                printItem(products, role);
+                                                userInput.nextLine();
+                                                while (true) {
+                                                    System.out.print("Enter : ");
+                                                    String[] usrInput = userInput.nextLine().split(" ");
+                                                    if (usrInput[0].equalsIgnoreCase("q")) {
+                                                        break;
+                                                    }
+                                                    if (usrInput.length != 2) {
+                                                        System.out.println("Your input is invalid!");
+                                                        continue;
+                                                    }
+                                                    try {
+                                                        String productID = usrInput[0];
+                                                        String Quantity = usrInput[1];
+                                                        if (Quantity.charAt(0) != '-' && Quantity.charAt(0) != '+') {
+                                                            Quantity = "+" + Quantity;
+                                                        }
+                                                        if (charts.isEmpty()) {
+                                                            charts.add(products.get(Integer.parseInt(productID) - 1));
+                                                            charts.getFirst().setZeroQuantity();
+                                                            charts.getFirst().setQuantity(Integer.parseInt(Quantity.substring(1)), Quantity.charAt(0));
+                                                            System.out.println("Product " + charts.getFirst().getName() + " " + charts.getFirst().getQuantity());
+                                                        } else {
+                                                            boolean found = false;
+                                                            int location = -1;
+                                                            for (Product chart : charts) {
+                                                                if (chart.getId().equals(products.get(Integer.parseInt(productID) - 1).getId())) {
+                                                                    found = true;
+                                                                    //get location
+                                                                    location = charts.indexOf(chart);
+                                                                    break;
+                                                                }
+                                                            }
+                                                            if (found) {
+                                                                charts.get(location).setQuantity(Integer.parseInt(Quantity.substring(1)), Quantity.charAt(0));
+                                                                System.out.println("Product " + charts.get(location).getName() + " " + charts.get(location).getQuantity());
+                                                            }
+                                                            if (!found) {
+                                                                charts.add(products.get(Integer.parseInt(productID) - 1));
+                                                                charts.getLast().setZeroQuantity();
+                                                                charts.getLast().setQuantity(Integer.parseInt(Quantity.substring(1)), Quantity.charAt(0));
+                                                                System.out.println("Product " + charts.getLast().getName() + " " + charts.getLast().getQuantity());
+                                                            }
+                                                        }
+                                                    }catch (Exception e){
+                                                        System.out.println("Your input is invalid!");
+                                                    }
+                                                }
+                                                if (!charts.isEmpty()) {
+                                                    try(FileWriter fileWriter = new FileWriter("src/CART.txt", true)) {
+                                                        for (Product chart : charts) {
+                                                            fileWriter.write("\n" + member.getId() + "\t" + chart.getId() + "\t" + chart.getQuantity());
+                                                        }
+
+                                                    }
+                                                    catch (Exception e) {
+                                                        System.out.println("!!! Error: Cannot write to file !!!");
+                                                    }
+                                                    System.out.println("Your cart has been saved!");
+                                                }
+                                                break;
+                                            }
+                                            else if (orderChoice.equalsIgnoreCase("q")) {
+                                                break;
+                                            }
+                                            else {
+                                                System.out.println("!!! Error: Input only 1-2 or Q for exit !!!");
+                                            }
+                                        }
                                     }
                                     //edit member
                                     else if (choice.equals("3") && role == 0) {
@@ -196,7 +290,7 @@ public class Main {
                                             //	Select (1-n) :
                                             System.out.print("Type Member Number, You want to edit or Press Q to Exit\n" +
                                                     "Select (1-" + members.size() + ") : ");
-                                            String memberChoice = kb.next();
+                                            String memberChoice = userInput.next();
                                             if (memberChoice.equalsIgnoreCase("q")) {
                                                 break;
                                             } else if (Integer.parseInt(memberChoice) > members.size() || Integer.parseInt(memberChoice) < 1) {
@@ -205,13 +299,13 @@ public class Main {
                                                 Member selectedMember = members.get(Integer.parseInt(memberChoice) - 1);
                                                 System.out.println("===== Edit info of " + selectedMember.getFirstname() + " " + selectedMember.getLastname() + " ===== \n" + "Type new info or Hyphen (-) for none edit. \n");
                                                 System.out.print("Enter Firstname: ");
-                                                String newFirstname = kb.next();
+                                                String newFirstname = userInput.next();
                                                 System.out.print("Enter Lastname: ");
-                                                String newLastname = kb.next();
+                                                String newLastname = userInput.next();
                                                 System.out.print("Enter Email: ");
-                                                String newEmail = kb.next();
+                                                String newEmail = userInput.next();
                                                 System.out.print("Enter Phone Number: ");
-                                                String newPhoneNumber = kb.next();
+                                                String newPhoneNumber = userInput.next();
                                                 if (!newFirstname.equals("-")) {
                                                     selectedMember.Firstname = newFirstname;
                                                 }
@@ -238,7 +332,7 @@ public class Main {
                                         }
                                     }
                                     //edit product
-                                    else if (choice.equals("4")) {
+                                    else if (choice.equals("4") && role == 0 ) {
                                         //edit product
                                         //print all product
                                         while (true) {
@@ -246,7 +340,7 @@ public class Main {
                                             printItem(products, role);
                                             System.out.print("Type Product Number, You want to edit or Press Q to Exit\n" +
                                                     "Select (1-" + products.size() + ") : ");
-                                            String productChoice = kb.next();
+                                            String productChoice = userInput.next();
                                             if (productChoice.equalsIgnoreCase("q")) {
                                                 break;
                                             } else if (Integer.parseInt(productChoice) > products.size() || Integer.parseInt(productChoice) < 1) {
@@ -255,9 +349,9 @@ public class Main {
                                                 Product selectedProduct = products.get(Integer.parseInt(productChoice) - 1);
                                                 System.out.println("===== Edit info of " + selectedProduct.getName() + " ===== \n" + "Type new info or Hyphen (-) for none edit.");
                                                 System.out.print("Name: ");
-                                                String newName = kb.next();
+                                                String newName = userInput.next();
                                                 System.out.print("Quantity (+ or -) : ");
-                                                String newQuantity = kb.next();
+                                                String newQuantity = userInput.next();
                                                 //check for -
                                                 if (!newName.equals("-")) {
                                                     if (newName.length() <= 1) {
@@ -295,9 +389,15 @@ public class Main {
                                             }
                                         }
                                     }
+                                    //exit
+                                    else if (choice.equals("3") || choice.equals("5") && role == 0) {
+                                        System.out.print("Logging out: See you!, " + member.Firstname + ". \n");
+                                        break;
+                                    }
                                 }
                             }
                         }
+                        //if email and password not match
                         if (!accFound) {
                             failCount++;
                             System.out.println("Error! - Email or Password is Incorrect (" + failCount + ")");
@@ -309,19 +409,18 @@ public class Main {
                         if (accFound) break;
                     }
                 }
+                //exit
                 else if (choice.equals("2")) {
                     System.out.print("\n===== SE STORE =====\nThank you for using our service :3\n");
                     System.exit(0);
                 }
+                //out of available choice exception
                 else {
                     System.out.println("!!! Error: Input only 1 or 2 !!!");
                 }
             }
         } catch (FileNotFoundException e) {
             System.out.println("!!! Error: File not found !!!");
-            System.exit(0);
-        } catch (InputMismatchException e) {
-            System.out.println("!!! Error: Something went wrong !!!");
             System.exit(0);
         }
     }
@@ -355,15 +454,6 @@ public class Main {
         for (int i = 0; i < 19; i++) {
             //สุ่มตัวอักษร A-Z มาต่อกัน 19 ตัว
             //สุ่มเลขมาแล้วแปลงเป็น char แล้วเอามาต่อกัน
-            /*  คำอธิบายจาก GitHub Copilot:
-                The generated random integer is then added to the ASCII value
-                of the uppercase letter 'A'. In ASCII, 'A' has a value of 65.
-                By adding the random integer (0-25) to 65, the result is an
-                integer value that corresponds to an uppercase letter in the
-                ASCII table. For example, if the random integer is 0, the
-                resulting character will be 'A'; if the random integer is 1,
-                the resulting character will be 'B', and so on up to 'Z'.
-             */
             password.append((char) (random.nextInt(26) + 'A'));
         }
         //แบ่ง password ออกเป็นตัวๆ
@@ -379,7 +469,6 @@ public class Main {
         parts[14] = passcode.charAt(3) + "";
         parts[15] = passcode.charAt(4) + "";
         parts[16] = passcode.charAt(5) + "";
-        //ไม่รู้ปริ้นไงก็เลยทำงี้ น่าจะมีวิํธีที่ดีกว่านี้มั้ง :)
         StringBuilder newPassword = new StringBuilder();
         for (String part : parts) {
             //เอา Array มาต่อกันเป็น String
@@ -390,6 +479,7 @@ public class Main {
     }
 
     static void printItem(List<Product> product, int roleID) {
+        System.out.println("=========== SE STORE's Products ===========");
         if (roleID == 2 || roleID == 3) {
             System.out.printf("%-4s %-15s %-19s %-30s\n", "#", "Name", "Price (฿)", "Quantity");
         } else {
@@ -401,7 +491,7 @@ public class Main {
             value.printItem(roleID);
             index++;
         }
-        System.out.println("================================");
+        System.out.println("===========================================");
     }
 }
 

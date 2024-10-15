@@ -33,6 +33,9 @@ public class Member {
     public String getFirstname() {
         return Firstname;
     }
+    String getId(){
+        return id;
+    }
 
     public String getLastname() {
         return Lastname;
