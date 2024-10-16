@@ -15,19 +15,22 @@ public class Main {
     public static void main(String[] args) {
             //Setting up
         try {
-            //Set up scanner
+            //Set up file scanner
             Scanner productScanner = new Scanner(new File("src/PRODUCT.txt"));
             Scanner categoryScanner = new Scanner(new File("src/CATEGORY.txt"));
             Scanner memberScanner = new Scanner(new File("src/MEMBER.txt"));
+            //kb input
             Scanner userInput = new Scanner(System.in);
 
             //Read product.txt
+            //For store product
             ArrayList<Product> products = new ArrayList<>();
             while (productScanner.hasNextLine()) {
-                String line = productScanner.nextLine();
-                String[] tokens = line.split("\t"); // Assuming tab-separated values
-                if (tokens.length >= 5) {
-                    products.add(new Product(tokens[0], tokens[1], tokens[2], tokens[3], tokens[4]));
+                //split by tab
+                String[] split = productScanner.nextLine().split("\t");
+                //check if split has more than 2 elements (prevent out of bound)
+                if (split.length >= 5) {
+                    products.add(new Product(split[0], split[1], split[2], split[3], split[4]));
                 }
             }
             productScanner.close();
@@ -51,8 +54,10 @@ public class Main {
             //Main Program
             while (true) {
                 System.out.print("\n===== SE STORE =====\n1. Login\n2. Exit\n====================\nSelect (1-2) : ");
+                //Login or Exit choice
                 String choice = userInput.next();
                 if (choice.equals("1")) {
+                    //Login fail count (default = 3)
                     int failCount = 0;
                     while (true) {
                         System.out.print("\n===== LOGIN =====\nEmail: ");
@@ -72,7 +77,9 @@ public class Main {
                                 }
                                 accFound = true;
                                 while (true) {
+                                    //print member info
                                     System.out.print("\n===== SE STORE =====\nHello, " + member.getCensoredName());
+                                    //check role
                                     int role = member.getRoleID() - '0';
                                     switch (role) {
                                         case 0 -> System.out.print(" (Staff)\n");
@@ -84,7 +91,7 @@ public class Main {
                                     System.out.println("Phone: " + member.getPhoneNumber());
                                     System.out.println("You have " + member.getPoint() + " points");
                                     System.out.println("====================");
-
+                                    //Menu flexed by role
                                     int menuIndex = 1;
                                     System.out.println(menuIndex + ". Show Category");
                                     if (role == 0) {
@@ -103,12 +110,15 @@ public class Main {
                                     System.out.println(menuIndex + ". Logout ");
                                     System.out.println("====================");
                                     System.out.print("Select (1-" + menuIndex + ") : ");
+                                    //Menu choice
                                     choice = userInput.next();
                                     //show category
                                     if (choice.equals("1")) {
                                         while (true) {
+                                            //print all category
                                             System.out.println("===== SE STORE's Product Categories =====");
                                             System.out.printf("%-4s %-15s\n", "#", "Category Name");
+                                            //K is index
                                             int k = 1;
                                             for (Category category : categories) {
                                                 System.out.printf("%-4s %-15s\n", k, category.getName());
@@ -117,28 +127,39 @@ public class Main {
                                             System.out.println("===========================================");
                                             System.out.print("Select Category to Show Product (1-" + categories.size() + ") or Q for exit \nselect : ");
                                             String categoryChoice = userInput.next();
+                                            //exit
                                             if (categoryChoice.equalsIgnoreCase("q")) break;
                                             try {
+                                                //category index for find product that match with category
                                                 int categoryIndex = Integer.parseInt(categoryChoice) - 1;
+                                                //check if category index is in range
                                                 if (categoryIndex < categories.size()) {
                                                     System.out.println("============ " + categories.get(categoryIndex).getName() + " ============");
+                                                    //One reason to use list is .sort() method.
                                                     List<Product> productLists = new ArrayList<>();
+                                                    //find product that match with category and add to productLists
                                                     for (Product product : products) {
                                                         if (product.getType().equals(categories.get(categoryIndex).getId())) {
                                                             productLists.add(product);
                                                         }
                                                     }
+                                                    //print productLists
                                                     printItem(productLists, role);
                                                     while (true) {
+                                                        //sort choice
                                                         System.out.print("1. Show Name By DESC\n2. Show Quantity By ASC\nor Press Q to Exit : ");
                                                         String sortChoice = userInput.next();
                                                         if (sortChoice.equals("1")) {
+                                                            //sort by name DESC
                                                             productLists.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
                                                             System.out.println("============ " + categories.get(categoryIndex).getName() + " ============");
+                                                            //then print
                                                             printItem(productLists, role);
                                                         } else if (sortChoice.equals("2")) {
+                                                            //sort by quantity ASC
                                                             productLists.sort(Comparator.comparingInt(Product::getQuantity));
                                                             System.out.println("============ " + categories.get(categoryIndex).getName() + " ============");
+                                                            //then print
                                                             printItem(productLists, role);
                                                         } else if (sortChoice.equalsIgnoreCase("q")) {
                                                             break;
@@ -162,15 +183,18 @@ public class Main {
                                         String inputEmail = userInput.next();
                                         System.out.print("Enter Phone Number: ");
                                         String phoneNumber = userInput.next();
+                                        //check if input is valid
                                         if (firstname.length() < 2 || lastname.length() < 2 || inputEmail.length() < 2 || !inputEmail.contains("@") || phoneNumber.length() < 10) {
                                             System.out.println("Error! - Your Information are Incorrect!");
                                         } else {
+                                            //Generate new member
                                             int latestID = getLatestID(members);
                                             String newPassword = generatePassword();
                                             Member newMember = new Member(String.valueOf(latestID), firstname, lastname, inputEmail, newPassword, phoneNumber, "0");
                                             members.add(newMember);
                                             System.out.println("Added member successfully!");
                                             System.out.println(newMember.getFirstname() + "'s Password is " + newMember.Password);
+                                            //write all member to file
                                             try (FileWriter fileWriter = new FileWriter("src/MEMBER.txt", true)) {
                                                 fileWriter.write("\n" + newMember.id + "\t" + newMember.Firstname + "\t" + newMember.Lastname + "\t" + newMember.Email + "\t" + newMember.rawPassword + "\t" + newMember.PhoneNumber + "\t" + newMember.point);
                                             } catch (Exception e) {
@@ -181,6 +205,7 @@ public class Main {
                                     //order product
                                     else if (choice.equals("2") ) {
                                         printItem(products, role);
+                                        //create cart
                                         ArrayList<Product> charts = new ArrayList<>();
                                         System.out.print("""
                                                     Enter the product number followed by the quantity.
@@ -203,10 +228,11 @@ public class Main {
                                             }
                                             else if (orderChoice.equals("2")) {
                                                 printItem(products, role);
-                                                userInput.nextLine();
+
                                                 while (true) {
                                                     System.out.print("Enter : ");
                                                     String[] usrInput = userInput.nextLine().split(" ");
+                                                    //a lot of condition to validate input
                                                     if (usrInput[0].equalsIgnoreCase("q")) {
                                                         break;
                                                     }
@@ -214,18 +240,39 @@ public class Main {
                                                         System.out.println("Your input is invalid!");
                                                         continue;
                                                     }
+                                                    if (Integer.parseInt(usrInput[0]) > products.size() || Integer.parseInt(usrInput[0]) < 1) {
+                                                        System.out.println("Cannot find product number " + usrInput[0]);
+                                                        continue;
+                                                    }
+                                                    //get limit (Available Quantity to Order)
+                                                    int limit = products.get(Integer.parseInt(usrInput[0]) - 1).getQuantity();
                                                     try {
                                                         String productID = usrInput[0];
                                                         String Quantity = usrInput[1];
+                                                        //desired product location
+                                                        int productIndex = Integer.parseInt(productID) - 1;
+                                                        //create new product
+                                                        Product selectedProduct = new Product(
+                                                                products.get(productIndex).getId(),
+                                                                products.get(productIndex).getName(),
+                                                                products.get(productIndex).getPrice(),
+                                                                products.get(productIndex).getQuantity(),
+                                                                products.get(productIndex).getType()
+                                                        );
+                                                        //Cleaning up
+                                                        selectedProduct.setZeroQuantity();
+                                                        //if quantity is not start with + or -, assume it's + (Unnecessary)
                                                         if (Quantity.charAt(0) != '-' && Quantity.charAt(0) != '+') {
                                                             Quantity = "+" + Quantity;
                                                         }
+                                                        //if chart is empty = add new.
                                                         if (charts.isEmpty()) {
-                                                            charts.add(products.get(Integer.parseInt(productID) - 1));
-                                                            charts.getFirst().setZeroQuantity();
-                                                            charts.getFirst().setQuantity(Integer.parseInt(Quantity.substring(1)), Quantity.charAt(0));
-                                                            System.out.println("Product " + charts.getFirst().getName() + " " + charts.getFirst().getQuantity());
+                                                            charts.add(selectedProduct);
+                                                            charts.getFirst().setQuantity(Integer.parseInt(Quantity.substring(1)), Quantity.charAt(0), limit);
+                                                            System.out.println("> Item added: " + charts.getFirst().getName() + " " + charts.getFirst().getQuantity());
                                                         } else {
+                                                            //already in chart = replace or update
+                                                            //finding that product location
                                                             boolean found = false;
                                                             int location = -1;
                                                             for (Product chart : charts) {
@@ -236,25 +283,36 @@ public class Main {
                                                                     break;
                                                                 }
                                                             }
+                                                            //Scenario
                                                             if (found) {
-                                                                charts.get(location).setQuantity(Integer.parseInt(Quantity.substring(1)), Quantity.charAt(0));
-                                                                System.out.println("Product " + charts.get(location).getName() + " " + charts.get(location).getQuantity());
+                                                                //if not contain + or - = replace
+                                                                if (!usrInput[1].contains("-") && !usrInput[1].contains("+")) {
+                                                                    charts.get(location).replaceQuantity(Integer.parseInt(Quantity));
+                                                                    System.out.println("> Item replaced: " + charts.get(location).getName() + " " + charts.get(location).getQuantity());
+                                                                } else {
+                                                                    //if contain + or - = update
+                                                                    charts.get(location).setQuantity(Integer.parseInt(Quantity.substring(1)), Quantity.charAt(0), limit);
+                                                                    System.out.println("> Item updated: " + charts.get(location).getName() + " " + charts.get(location).getQuantity());
+                                                                }
                                                             }
                                                             if (!found) {
-                                                                charts.add(products.get(Integer.parseInt(productID) - 1));
-                                                                charts.getLast().setZeroQuantity();
-                                                                charts.getLast().setQuantity(Integer.parseInt(Quantity.substring(1)), Quantity.charAt(0));
-                                                                System.out.println("Product " + charts.getLast().getName() + " " + charts.getLast().getQuantity());
+                                                                //if not found = add new
+                                                                charts.add(selectedProduct);
+                                                                charts.getLast().setQuantity(Integer.parseInt(Quantity.substring(1)), Quantity.charAt(0), limit);
+                                                                System.out.println("> Item added: " + charts.getLast().getName() + " " + charts.getLast().getQuantity());
                                                             }
                                                         }
                                                     }catch (Exception e){
                                                         System.out.println("Your input is invalid!");
                                                     }
                                                 }
+                                                //write to file
                                                 if (!charts.isEmpty()) {
                                                     try(FileWriter fileWriter = new FileWriter("src/CART.txt", true)) {
                                                         for (Product chart : charts) {
-                                                            fileWriter.write("\n" + member.getId() + "\t" + chart.getId() + "\t" + chart.getQuantity());
+                                                            if (chart.getQuantity() != 0) {
+                                                                fileWriter.write("\n" + member.getId() + "\t" + chart.getId() + "\t" + chart.getQuantity());
+                                                            }
                                                         }
 
                                                     }
@@ -406,6 +464,7 @@ public class Main {
                                 break;
                             }
                         }
+                        //after all process done.
                         if (accFound) break;
                     }
                 }

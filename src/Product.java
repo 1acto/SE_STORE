@@ -16,6 +16,13 @@ public class Product {
         this.quantity = Integer.parseInt(quantity);
         this.type = type;
     }
+    public Product(String id ,String name, double price, int quantity, String type) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+        this.type = type;
+    }
 
     public String getName() { return name; }
     public void setName(String newName) { this.name = newName; }
@@ -58,9 +65,27 @@ public class Product {
     }
     //set 0 to quantity
     public void setZeroQuantity() { this.quantity = 0; }
+    public void replaceQuantity(int i) { this.quantity = i; }
     public void setQuantity(int i , char operator) {
         if (operator == '+'){
             this.quantity += i;
+        }else {
+            if (quantity - i >= 0){
+                this.quantity -= i;
+            } else {
+                this.quantity = 0;
+            }
+        }
+    }
+    public void setQuantity(int i , char operator, int limit) {
+        if (operator == '+'){
+            if (quantity + i <= limit){
+                if (quantity == limit){ System.out.println("Notice: " + getName() + "'s hitting the stock limit."); }
+                this.quantity += i;
+            } else {
+                this.quantity = limit;
+                System.out.println("Notice: " + getName() + "'s hitting the stock limit and set to " + limit + " (Available stock).");
+            }
         }else {
             if (quantity - i >= 0){
                 this.quantity -= i;
