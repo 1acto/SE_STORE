@@ -8,12 +8,14 @@
  * Description: Store Management System.
  */
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-            //Setting up
+        //Setting up
         try {
             //Set up file scanner
             Scanner productScanner = new Scanner(new File("src/PRODUCT.txt"));
@@ -39,7 +41,9 @@ public class Main {
             ArrayList<Category> categories = new ArrayList<>();
             while (categoryScanner.hasNextLine()) {
                 String[] split = categoryScanner.nextLine().split("\t");
-                if (split.length >= 2) { categories.add(new Category(split[0], split[1])); }
+                if (split.length >= 2) {
+                    categories.add(new Category(split[0], split[1]));
+                }
             }
             categoryScanner.close();
 
@@ -47,7 +51,9 @@ public class Main {
             ArrayList<Member> members = new ArrayList<>();
             while (memberScanner.hasNext()) {
                 String[] split = memberScanner.nextLine().split("\t");
-                if (split.length >= 7) { members.add(new Member(split[0], split[1], split[2], split[3], split[4], split[5], split[6])); }
+                if (split.length >= 7) {
+                    members.add(new Member(split[0], split[1], split[2], split[3], split[4], split[5], split[6]));
+                }
             }
             memberScanner.close();
 
@@ -102,7 +108,7 @@ public class Main {
                                         menuIndex++;
                                         System.out.println(menuIndex + ". Edit Product");
                                     }
-                                    if(role != 0){
+                                    if (role != 0) {
                                         menuIndex++;
                                         System.out.println(menuIndex + ". Order Product");
                                     }
@@ -134,7 +140,6 @@ public class Main {
                                                 int categoryIndex = Integer.parseInt(categoryChoice) - 1;
                                                 //check if category index is in range
                                                 if (categoryIndex < categories.size()) {
-                                                    System.out.println("============ " + categories.get(categoryIndex).getName() + " ============");
                                                     //One reason to use list is .sort() method.
                                                     List<Product> productLists = new ArrayList<>();
                                                     //find product that match with category and add to productLists
@@ -144,6 +149,7 @@ public class Main {
                                                         }
                                                     }
                                                     //print productLists
+                                                    System.out.println("============ " + categories.get(categoryIndex).getName() + " ============");
                                                     printItem(productLists, role);
                                                     while (true) {
                                                         //sort choice
@@ -160,11 +166,12 @@ public class Main {
                                                             productLists.sort(Comparator.comparingInt(Product::getQuantity));
                                                             System.out.println("============ " + categories.get(categoryIndex).getName() + " ============");
                                                             //then print
+                                                            System.out.println("============ " + categories.get(categoryIndex).getName() + " ============");
                                                             printItem(productLists, role);
                                                         } else if (sortChoice.equalsIgnoreCase("q")) {
                                                             break;
                                                         } else {
-                                                            System.out.println("!!! Error: Input only 1-3 !!!");
+                                                            System.out.println("!!! Error: Input only 1-2 or Q for exit !!!");
                                                         }
                                                     }
                                                 }
@@ -203,16 +210,17 @@ public class Main {
                                         }
                                     }
                                     //order product
-                                    else if (choice.equals("2") ) {
+                                    else if (choice.equals("2")) {
+                                        System.out.println("=========== SE STORE's Products ===========");
                                         printItem(products, role);
                                         //create cart
                                         ArrayList<Product> charts = new ArrayList<>();
                                         System.out.print("""
-                                                    Enter the product number followed by the quantity.
-                                                    1. How to Order
-                                                    2. List Products
-                                                    Q. Exit
-                                                    """);
+                                                Enter the product number followed by the quantity.
+                                                1. How to Order
+                                                2. List Products
+                                                Q. Exit
+                                                """);
                                         while (true) {
                                             System.out.print("Enter : ");
                                             String orderChoice = userInput.next();
@@ -225,10 +233,10 @@ public class Main {
                                                         • To Adjust Quantity:
                                                         \t+ to add more items: 1 +50 (Adds 50 more chips)
                                                         \t- to reduce items: 1 -50 (Removes 50 chips)""");
-                                            }
-                                            else if (orderChoice.equals("2")) {
+                                            } else if (orderChoice.equals("2")) {
+                                                System.out.println("=========== SE STORE's Products ===========");
                                                 printItem(products, role);
-
+                                                userInput.nextLine();
                                                 while (true) {
                                                     System.out.print("Enter : ");
                                                     String[] usrInput = userInput.nextLine().split(" ");
@@ -302,31 +310,28 @@ public class Main {
                                                                 System.out.println("> Item added: " + charts.getLast().getName() + " " + charts.getLast().getQuantity());
                                                             }
                                                         }
-                                                    }catch (Exception e){
+                                                    } catch (Exception e) {
                                                         System.out.println("Your input is invalid!");
                                                     }
                                                 }
                                                 //write to file
                                                 if (!charts.isEmpty()) {
-                                                    try(FileWriter fileWriter = new FileWriter("src/CART.txt", true)) {
+                                                    try (FileWriter fileWriter = new FileWriter("src/CART.txt", true)) {
                                                         for (Product chart : charts) {
                                                             if (chart.getQuantity() != 0) {
                                                                 fileWriter.write("\n" + member.getId() + "\t" + chart.getId() + "\t" + chart.getQuantity());
                                                             }
                                                         }
 
-                                                    }
-                                                    catch (Exception e) {
+                                                    } catch (Exception e) {
                                                         System.out.println("!!! Error: Cannot write to file !!!");
                                                     }
                                                     System.out.println("Your cart has been saved!");
                                                 }
                                                 break;
-                                            }
-                                            else if (orderChoice.equalsIgnoreCase("q")) {
+                                            } else if (orderChoice.equalsIgnoreCase("q")) {
                                                 break;
-                                            }
-                                            else {
+                                            } else {
                                                 System.out.println("!!! Error: Input only 1-2 or Q for exit !!!");
                                             }
                                         }
@@ -348,102 +353,114 @@ public class Main {
                                             //	Select (1-n) :
                                             System.out.print("Type Member Number, You want to edit or Press Q to Exit\n" +
                                                     "Select (1-" + members.size() + ") : ");
-                                            String memberChoice = userInput.next();
-                                            if (memberChoice.equalsIgnoreCase("q")) {
-                                                break;
-                                            } else if (Integer.parseInt(memberChoice) > members.size() || Integer.parseInt(memberChoice) < 1) {
-                                                System.out.println("!!! Error: Input only 1-" + members.size() + " or Q for exit !!!");
-                                            } else {
-                                                Member selectedMember = members.get(Integer.parseInt(memberChoice) - 1);
-                                                System.out.println("===== Edit info of " + selectedMember.getFirstname() + " " + selectedMember.getLastname() + " ===== \n" + "Type new info or Hyphen (-) for none edit. \n");
-                                                System.out.print("Enter Firstname: ");
-                                                String newFirstname = userInput.next();
-                                                System.out.print("Enter Lastname: ");
-                                                String newLastname = userInput.next();
-                                                System.out.print("Enter Email: ");
-                                                String newEmail = userInput.next();
-                                                System.out.print("Enter Phone Number: ");
-                                                String newPhoneNumber = userInput.next();
-                                                if (!newFirstname.equals("-")) {
-                                                    selectedMember.Firstname = newFirstname;
-                                                }
-                                                if (!newLastname.equals("-")) {
-                                                    selectedMember.Lastname = newLastname;
-                                                }
-                                                if (!newEmail.equals("-")) {
-                                                    selectedMember.Email = newEmail;
-                                                }
-                                                if (!newPhoneNumber.equals("-")) {
-                                                    selectedMember.PhoneNumber = newPhoneNumber;
-                                                }
-                                                members.set(Integer.parseInt(memberChoice) - 1, selectedMember);
-                                                //write all member to file
-                                                try (FileWriter fileWriter = new FileWriter("src/MEMBER.txt")) {
-                                                    for (Member member1 : members) {
-                                                        fileWriter.write(member1.id + "\t" + member1.Firstname + "\t" + member1.Lastname + "\t" + member1.Email + "\t" + member1.rawPassword + "\t" + member1.PhoneNumber + "\t" + member1.point + "\n");
+                                            try {
+                                                String memberChoice = userInput.next();
+                                                if (memberChoice.equalsIgnoreCase("q")) {
+                                                    break;
+                                                } else if (Integer.parseInt(memberChoice) > members.size() || Integer.parseInt(memberChoice) < 1) {
+                                                    System.out.println("!!! Error: Input only 1-" + members.size() + " or Q for exit !!!");
+                                                } else {
+                                                    Member selectedMember = members.get(Integer.parseInt(memberChoice) - 1);
+                                                    System.out.println("===== Edit info of " + selectedMember.getFirstname() + " " + selectedMember.getLastname() + " ===== \n" + "Type new info or Hyphen (-) for none edit.");
+                                                    System.out.print("Enter Firstname: ");
+                                                    String newFirstname = userInput.next();
+                                                    System.out.print("Enter Lastname: ");
+                                                    String newLastname = userInput.next();
+                                                    System.out.print("Enter Email: ");
+                                                    String newEmail = userInput.next();
+                                                    System.out.print("Enter Phone Number: ");
+                                                    String newPhoneNumber = userInput.next();
+                                                    if (newFirstname.length() < 2 && !newFirstname.equals("-") || newLastname.length() < 2 && !newLastname.equals("-") || newEmail.length() < 2 && !newEmail.equals("-") || !newEmail.contains("@") && !newEmail.equals("-") || newPhoneNumber.length() < 10 && !newPhoneNumber.equals("-")) {
+                                                        System.out.println("Error! - Your Information are Incorrect!");
+                                                    } else {
+                                                        if (!newFirstname.equals("-")) {
+                                                            selectedMember.Firstname = newFirstname;
+                                                        }
+                                                        if (!newLastname.equals("-")) {
+                                                            selectedMember.Lastname = newLastname;
+                                                        }
+                                                        if (!newEmail.equals("-")) {
+                                                            selectedMember.Email = newEmail;
+                                                        }
+                                                        if (!newPhoneNumber.equals("-")) {
+                                                            selectedMember.PhoneNumber = newPhoneNumber;
+                                                        }
+                                                        members.set(Integer.parseInt(memberChoice) - 1, selectedMember);
+                                                        //write all member to file
+                                                        try (FileWriter fileWriter = new FileWriter("src/MEMBER.txt")) {
+                                                            for (Member member1 : members) {
+                                                                fileWriter.write(member1.id + "\t" + member1.Firstname + "\t" + member1.Lastname + "\t" + member1.Email + "\t" + member1.rawPassword + "\t" + member1.PhoneNumber + "\t" + member1.point + "\n");
+                                                            }
+                                                            System.out.println("Edit member successfully!");
+                                                        } catch (Exception e) {
+                                                            System.out.println("!!! Error: Cannot write to file !!!");
+                                                        }
                                                     }
-                                                } catch (Exception e) {
-                                                    System.out.println("!!! Error: Cannot write to file !!!");
                                                 }
-                                                System.out.println("Edit member successfully!");
+                                            } catch (Exception e) {
+                                                System.out.println("!!! Error: Input only 1-" + members.size() + " or Q for exit !!!");
                                             }
                                         }
                                     }
                                     //edit product
-                                    else if (choice.equals("4") && role == 0 ) {
+                                    else if (choice.equals("4") && role == 0) {
                                         //edit product
                                         //print all product
                                         while (true) {
-                                            System.out.println("===== SE STORE's Product =====");
-                                            printItem(products, role);
-                                            System.out.print("Type Product Number, You want to edit or Press Q to Exit\n" +
-                                                    "Select (1-" + products.size() + ") : ");
-                                            String productChoice = userInput.next();
-                                            if (productChoice.equalsIgnoreCase("q")) {
-                                                break;
-                                            } else if (Integer.parseInt(productChoice) > products.size() || Integer.parseInt(productChoice) < 1) {
-                                                System.out.println("!!! Error: Input only 1-" + products.size() + " or Q for exit !!!");
-                                            } else {
-                                                Product selectedProduct = products.get(Integer.parseInt(productChoice) - 1);
-                                                System.out.println("===== Edit info of " + selectedProduct.getName() + " ===== \n" + "Type new info or Hyphen (-) for none edit.");
-                                                System.out.print("Name: ");
-                                                String newName = userInput.next();
-                                                System.out.print("Quantity (+ or -) : ");
-                                                String newQuantity = userInput.next();
-                                                //check for -
-                                                if (!newName.equals("-")) {
-                                                    if (newName.length() <= 1) {
-                                                        System.out.println("Error! - Your Information are Incorrect!");
-                                                        break;
-                                                    } else {
-                                                        selectedProduct.setName(newName);
-                                                    }
-
-                                                }
-                                                if (!newQuantity.equals("-")) {
-                                                    //check for + or -
-                                                    if (newQuantity.charAt(0) == '+' || newQuantity.charAt(0) == '-') {
-                                                        if (newQuantity.contains(".")) {
+                                            try {
+                                                System.out.println("===== SE STORE's Product =====");
+                                                printItem(products, role);
+                                                System.out.print("Type Product Number, You want to edit or Press Q to Exit\n" +
+                                                        "Select (1-" + products.size() + ") : ");
+                                                String productChoice = userInput.next();
+                                                if (productChoice.equalsIgnoreCase("q")) {
+                                                    break;
+                                                } else if (Integer.parseInt(productChoice) > products.size() || Integer.parseInt(productChoice) < 1) {
+                                                    System.out.println("!!! Error: Input only 1-" + products.size() + " or Q for exit !!!");
+                                                } else {
+                                                    Product selectedProduct = products.get(Integer.parseInt(productChoice) - 1);
+                                                    System.out.println("===== Edit info of " + selectedProduct.getName() + " ===== \n" + "Type new info or Hyphen (-) for none edit.");
+                                                    System.out.print("Name: ");
+                                                    String newName = userInput.next();
+                                                    System.out.print("Quantity (+ or -) : ");
+                                                    String newQuantity = userInput.next();
+                                                    //check for -
+                                                    if (!newName.equals("-")) {
+                                                        if (newName.length() <= 1) {
                                                             System.out.println("Error! - Your Information are Incorrect!");
                                                             break;
                                                         } else {
-                                                            selectedProduct.setQuantity(Integer.parseInt(newQuantity.substring(1)), newQuantity.charAt(0));
+                                                            selectedProduct.setName(newName);
                                                         }
-                                                    } else {
-                                                        System.out.println("Error! - Your Information are Incorrect!");
-                                                        break;
+
                                                     }
-                                                }
-                                                products.set(Integer.parseInt(productChoice) - 1, selectedProduct);
-                                                //write all product to file
-                                                try (FileWriter fileWriter = new FileWriter("src/PRODUCT.txt")) {
-                                                    for (Product product : products) {
-                                                        fileWriter.write(product.getId() + "\t" + product.getName() + "\t" + product.getStringPrice() + "\t" + product.getQuantity() + "\t" + product.getType() + "\n");
+                                                    if (!newQuantity.equals("-")) {
+                                                        //check for + or -
+                                                        if (newQuantity.charAt(0) == '+' || newQuantity.charAt(0) == '-') {
+                                                            if (newQuantity.contains(".")) {
+                                                                System.out.println("Error! - Your Information are Incorrect!");
+                                                                break;
+                                                            } else {
+                                                                selectedProduct.setQuantity(Integer.parseInt(newQuantity.substring(1)), newQuantity.charAt(0));
+                                                            }
+                                                        } else {
+                                                            System.out.println("Error! - Your Information are Incorrect!");
+                                                            break;
+                                                        }
                                                     }
-                                                } catch (Exception e) {
-                                                    System.out.println("!!! Error: Cannot write to file !!!");
+                                                    products.set(Integer.parseInt(productChoice) - 1, selectedProduct);
+                                                    //write all product to file
+                                                    try (FileWriter fileWriter = new FileWriter("src/PRODUCT.txt")) {
+                                                        for (Product product : products) {
+                                                            fileWriter.write(product.getId() + "\t" + product.getName() + "\t" + product.getStringPrice() + "\t" + product.getQuantity() + "\t" + product.getType() + "\n");
+                                                        }
+                                                    } catch (Exception e) {
+                                                        System.out.println("!!! Error: Cannot write to file !!!");
+                                                    }
+                                                    System.out.println("Success - " + selectedProduct.getName() + " has been updated!");
                                                 }
-                                                System.out.println("Success - " + selectedProduct.getName() + " has been updated!");
+                                            } catch (Exception e) {
+                                                System.out.println("!!! Error: Input only 1-" + products.size() + " or Q for exit !!!");
                                             }
                                         }
                                     }
@@ -538,7 +555,6 @@ public class Main {
     }
 
     static void printItem(List<Product> product, int roleID) {
-        System.out.println("=========== SE STORE's Products ===========");
         if (roleID == 2 || roleID == 3) {
             System.out.printf("%-4s %-15s %-19s %-30s\n", "#", "Name", "Price (฿)", "Quantity");
         } else {

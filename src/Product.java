@@ -55,12 +55,14 @@ public class Product {
             stringDiscountPrice = singleToDoubleDigit(discountPrice);
             //print in format ""
             System.out.printf("%-15s %-6s (%-1s) \t %-1d \n", this.name, stringDiscountPrice, stringPrice, this.quantity);
-        } else if (roleID == 3) {
+        }
+        else if (roleID == 3) {
             discountPrice -= (this.price * 10) / 100;
             stringDiscountPrice = singleToDoubleDigit(discountPrice);
             System.out.printf("%-15s %-6s (%-1s) \t %-1d \n", this.name, stringDiscountPrice, stringPrice, this.quantity);
-        } else {
-            System.out.printf("%-15s %-7f %10s \n", this.name, this.price, this.quantity);
+        }
+        else {
+            System.out.printf("%-15s %-7s %10s \n", this.name, stringPrice, this.quantity);
         }
     }
     //set 0 to quantity
