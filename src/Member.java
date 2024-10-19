@@ -18,8 +18,8 @@ public class Member {
         PhoneNumber = phoneNumber;
         this.point = point;
     }
-    boolean checkPassword(String password){
-        return this.Password.equals(password);
+    boolean check(String email,String password){
+        return this.Password.equals(password) && this.Email.equals(email);
     }
     String decryptPassword(String password){
         return String.valueOf(password.charAt(9)) +
@@ -66,5 +66,13 @@ public class Member {
     }
     char getRoleID() {
         return rawPassword.charAt(6);// `getRoleID Frank do already//
+    }
+
+    public String getPassword() {
+        return Password;
+    }
+
+    public boolean checkPassword(String password) {
+        return this.Password.equals(password);
     }
 }
