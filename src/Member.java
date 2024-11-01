@@ -18,10 +18,12 @@ public class Member {
         PhoneNumber = phoneNumber;
         this.point = point;
     }
+
     boolean check(String email,String password){
         return this.Password.equals(password) && this.Email.equals(email);
     }
-    String decryptPassword(String password){
+
+    public String decryptPassword(String password){
         return String.valueOf(password.charAt(9)) +
                 password.charAt(10) +
                 password.charAt(13) +
@@ -29,11 +31,12 @@ public class Member {
                 password.charAt(15) +
                 password.charAt(16);
     }
-    //get first
+
     public String getFirstname() {
         return Firstname;
     }
-    String getId(){
+
+    public String getId(){
         return id;
     }
 
@@ -44,6 +47,7 @@ public class Member {
     public String getEmail() {
         return Email;
     }
+
     public String censorEmail(){
         String[] parts = Email.split("@");
         String[] censored = new String[2];
@@ -51,21 +55,26 @@ public class Member {
         censored[1] = parts[1].substring(0, 2) + "***";
         return censored[0] + "@" + censored[1];
     }
+
     public String getCensoredName() {
         return Lastname.charAt(0) + ". " + Firstname;
     }
+
     public String getPhoneNumber() {
         return PhoneNumber.substring(0, 3) + "-" + PhoneNumber.substring(3,6) + "-" + PhoneNumber.substring(6);
     }
-    String getPoint(){
+
+    public String getPoint(){
         String[] parts = point.split("\\.");
         return parts[0];
     }
-    char getStatus() {
+
+    public char getStatus() {
         return rawPassword.charAt(2);
     }
-    char getRoleID() {
-        return rawPassword.charAt(6);// `getRoleID Frank do already//
+
+    public char getRoleID() {
+        return rawPassword.charAt(6);
     }
 
     public String getPassword() {

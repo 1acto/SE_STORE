@@ -117,7 +117,7 @@ public class Main {
         //แบ่ง password ออกเป็นตัวๆ
         String[] parts = password.toString().split("");
         //Status
-        parts[1] = "1";
+        parts[2] = "1";
         //Role (default: Regular)
         parts[6] = "1";
         //แทนที่ด้วย passcode ที่สุ่มไว้
@@ -187,6 +187,19 @@ public class Main {
         //Menu choice
     }
 
+    static void printCategory(ArrayList<Category> categories) {
+        System.out.println("===== SE STORE's Product Categories =====");
+        System.out.printf("%-4s %-15s\n", "#", "Category Name");
+        //K is index
+        int index = 1;
+        for (Category category : categories) {
+            System.out.printf("%-4s %-15s\n", index, category.getName());
+            index++;
+        }
+        System.out.println("===========================================");
+        System.out.print("Select Category to Show Product (1-" + categories.size() + ") or Q for exit \nselect : ");
+    }
+
     public static void main(String[] args) {
         ArrayList<Product> products = new ArrayList<>();
         ArrayList<Category> categories = new ArrayList<>();
@@ -211,19 +224,10 @@ public class Main {
                     //print member info
                     menu(member, role);
                     choice = input.next();
+                    //show category
                     if (choice.equals("1")) {
                         while (true) {
-                            //print all category
-                            System.out.println("===== SE STORE's Product Categories =====");
-                            System.out.printf("%-4s %-15s\n", "#", "Category Name");
-                            //K is index
-                            int k = 1;
-                            for (Category category : categories) {
-                                System.out.printf("%-4s %-15s\n", k, category.getName());
-                                k++;
-                            }
-                            System.out.println("===========================================");
-                            System.out.print("Select Category to Show Product (1-" + categories.size() + ") or Q for exit \nselect : ");
+                            printCategory(categories);
                             String categoryChoice = input.next();
                             //exit
                             if (categoryChoice.equalsIgnoreCase("q")) break;
@@ -293,7 +297,8 @@ public class Main {
                             //write all member to file
                             try (FileWriter fileWriter = new FileWriter("src/MEMBER.txt", true)) {
                                 fileWriter.write("\n" + newMember.id + "\t" + newMember.Firstname + "\t" + newMember.Lastname + "\t" + newMember.Email + "\t" + newMember.rawPassword + "\t" + newMember.PhoneNumber + "\t" + newMember.point);
-                            } catch (IOException e) {
+                            }
+                            catch (IOException e) {
                                 System.out.println("!!! Error: Cannot write to file !!!");
                             }
                         }
@@ -532,9 +537,15 @@ public class Main {
                                             } else {
                                                 selectedProduct.setQuantity(Integer.parseInt(newQuantity.substring(1)), newQuantity.charAt(0));
                                             }
-                                        } else {
-                                            System.out.println("Error! - Your Information are Incorrect!");
-                                            break;
+                                        }
+                                        else {
+                                            try {
+                                                selectedProduct.replaceQuantity(Integer.parseInt(newQuantity));
+                                            } catch (Exception e) {
+                                                System.out.println("Error! - Your Information are Incorrect!");
+                                                break;
+                                            }
+
                                         }
                                     }
                                     products.set(Integer.parseInt(productChoice) - 1, selectedProduct);
