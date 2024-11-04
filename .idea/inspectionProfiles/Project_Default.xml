@@ -9,5 +9,7 @@
     <inspection_tool class="ExtractMethodRecommender" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="minLength" value="956" />
     </inspection_tool>
+    <inspection_tool class="FieldMayBeFinal" enabled="true" level="INFORMATION" enabled_by_default="true" />
+    <inspection_tool class="JavaExistingMethodCanBeUsed" enabled="true" level="INFORMATION" enabled_by_default="true" />
   </profile>
 </component>

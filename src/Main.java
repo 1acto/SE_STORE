@@ -6,6 +6,7 @@
  * Last Modified: 02 Sep 2024
  * Description: Store Management System.
  */
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -15,8 +16,12 @@ import java.util.*;
 public class Main {
     private static final int MAX_LOGIN_ATTEMPTS = 3;
     private static final char EXPIRED_STATUS = '0';
+    static ArrayList<Product> products = new ArrayList<>();
+    static ArrayList<Category> categories = new ArrayList<>();
+    static ArrayList<Member> members = new ArrayList<>();
+    static int role = -1;
 
-    private static void read(ArrayList<Product> products, ArrayList<Category> categories, ArrayList<Member> members) {
+    private static void Read() {
         try (Scanner productScanner = new Scanner(new File("src/PRODUCT.txt"));
              Scanner categoryScanner = new Scanner(new File("src/CATEGORY.txt"));
              Scanner memberScanner = new Scanner(new File("src/MEMBER.txt"))) {
@@ -48,7 +53,7 @@ public class Main {
         }
     }
 
-    private static int Login(ArrayList<Member> members) {
+    private static int Login() {
         Scanner input = new Scanner(System.in);
         boolean found = false;
         int membersIndex = -1;
@@ -59,16 +64,20 @@ public class Main {
             System.out.print("Password: ");
             String password = input.nextLine().trim();
             System.out.println("====================");
+            //exit
             if (email.equalsIgnoreCase("q") || password.equalsIgnoreCase("q")) {
                 break;
             }
             for (Member member : members) {
                 if (member.check(email, password)) {
                     found = true;
+                    //check expired
                     if (member.getStatus() == EXPIRED_STATUS) {
                         System.out.println("Error! - Your Account are Expired! ");
-                    } else {
+                    }
+                    else {
                         membersIndex = members.indexOf(member);
+                        role = member.getRoleID() - '0';
                     }
                     break;
                 }
@@ -85,7 +94,7 @@ public class Main {
         return membersIndex;
     }
 
-    private static int getLatestID(ArrayList<Member> members) {
+    private static int getLatestID() {
         int latestID = 0;
         for (Member member : members) {
             if (Integer.parseInt(member.id) > latestID) {
@@ -136,26 +145,29 @@ public class Main {
         return newPassword.toString();
     }
 
-    static void printItem(List<Product> product, int roleID) {
-        if (roleID == 2 || roleID == 3) {
+    static void printItem(List<Product> product) {
+        //header
+        if (role == 2 || role == 3) {
             System.out.printf("%-4s %-15s %-19s %-30s\n", "#", "Name", "Price (฿)", "Quantity");
-        } else {
+        }
+        else {
             System.out.printf("%-4s %-15s %-15s %-15s\n", "#", "Name", "Price (฿)", "Quantity");
         }
+        //printing
         int index = 1;
         for (Product value : product) {
             System.out.printf("%-5s", index);
-            value.printItem(roleID);
+            value.printItem(role);
             index++;
         }
         System.out.println("===========================================");
     }
 
-    static void menu(Member member, int role) {
+    static void menu(Member member) {
         System.out.print("""
-                    
-                    ===== SE STORE =====
-                    Hello,\s""" + member.getCensoredName());
+                
+                ===== SE STORE =====
+                Hello,\s""" + member.getCensoredName());
         switch (role) {
             case 0 -> System.out.print(" (Staff)\n");
             case 1 -> System.out.print(" (Regular)\n");
@@ -187,8 +199,8 @@ public class Main {
         //Menu choice
     }
 
-    static void printCategory(ArrayList<Category> categories) {
-        System.out.println("===== SE STORE's Product Categories =====");
+    static void printCategory() {
+        System.out.println("\n===== SE STORE's Product Categories =====");
         System.out.printf("%-4s %-15s\n", "#", "Category Name");
         //K is index
         int index = 1;
@@ -200,11 +212,33 @@ public class Main {
         System.out.print("Select Category to Show Product (1-" + categories.size() + ") or Q for exit \nselect : ");
     }
 
+    static void writeProducts(Product selectedProduct) {
+        try (FileWriter fileWriter = new FileWriter("src/PRODUCT.txt")) {
+            for (Product product : products) {
+                fileWriter.write(product.getId() + "\t" + product.getName() + "\t" + product.getStringPrice() + "\t" + product.getQuantity() + "\t" + product.getType() + "\n");
+            }
+        }
+        catch (Exception e) {
+            System.out.println("!!! Error: Cannot write to file !!!");
+        }
+        System.out.println("Success - " + selectedProduct.getName() + " has been updated!");
+    }
+
+    static void writeProducts(List<Product> products) {
+        try (FileWriter fileWriter = new FileWriter("src/PRODUCT.txt")) {
+            for (Product product : products) {
+                fileWriter.write(product.getId() + "\t" + product.getName() + "\t" + product.getStringPrice() + "\t" + product.getQuantity() + "\t" + product.getType() + "\n");
+            }
+        }
+        catch (Exception e) {
+            System.out.println("!!! Error: Cannot write to file !!!");
+        }
+        System.out.println("Success - stock has been updated!");
+    }
+
+
     public static void main(String[] args) {
-        ArrayList<Product> products = new ArrayList<>();
-        ArrayList<Category> categories = new ArrayList<>();
-        ArrayList<Member> members = new ArrayList<>();
-        read(products, categories, members);
+        Read();
         Scanner input = new Scanner(System.in);
         while (true) {
             System.out.print("""
@@ -216,23 +250,23 @@ public class Main {
             String choice = input.next();
             //login
             if (choice.equals("1")) {
-                int memberIndex = Login(members);
+                int memberIndex = Login();
                 if (memberIndex == -1) break;
+                if (role == -1) System.out.println("!!! Error: Cant find this user role !!!");
                 while (true) {
                     Member member = members.get(memberIndex);
-                    int role = member.getRoleID() - '0';
                     //print member info
-                    menu(member, role);
+                    menu(member);
                     choice = input.next();
                     //show category
                     if (choice.equals("1")) {
                         while (true) {
-                            printCategory(categories);
+                            printCategory();
                             String categoryChoice = input.next();
                             //exit
                             if (categoryChoice.equalsIgnoreCase("q")) break;
                             try {
-                                //category index for find product that match with category
+                                //location
                                 int categoryIndex = Integer.parseInt(categoryChoice) - 1;
                                 //check if category index is in range
                                 if (categoryIndex < categories.size()) {
@@ -245,26 +279,31 @@ public class Main {
                                         }
                                     }
                                     //print productLists
-                                    System.out.println("============ " + categories.get(categoryIndex).getName() + " ============");
-                                    printItem(productLists, role);
+                                    System.out.println("\n============ " + categories.get(categoryIndex).getName() + " ============");
+                                    printItem(productLists);
                                     while (true) {
                                         //sort choice
                                         System.out.print("1. Show Name By DESC\n2. Show Quantity By ASC\nor Press Q to Exit : ");
                                         String sortChoice = input.next();
+                                        //sort by name DESC
                                         if (sortChoice.equals("1")) {
                                             //sort by name DESC
                                             productLists.sort((o1, o2) -> o2.getName().compareTo(o1.getName()));
                                             System.out.println("============ " + categories.get(categoryIndex).getName() + " ============");
-                                            //then print
-                                            printItem(productLists, role);
-                                        } else if (sortChoice.equals("2")) {
+                                            printItem(productLists);
+                                        }
+                                        //sort by quantity ASC
+                                        else if (sortChoice.equals("2")) {
                                             //sort by quantity ASC
                                             productLists.sort(Comparator.comparingInt(Product::getQuantity));
                                             System.out.println("============ " + categories.get(categoryIndex).getName() + " ============");
-                                            printItem(productLists, role);
-                                        } else if (sortChoice.equalsIgnoreCase("q")) {
+                                            printItem(productLists);
+                                        }
+                                        //exit
+                                        else if (sortChoice.equalsIgnoreCase("q")) {
                                             break;
-                                        } else {
+                                        }
+                                        else {
                                             System.out.println("!!! Error: Input only 1-2 or Q for exit !!!");
                                         }
                                     }
@@ -276,7 +315,7 @@ public class Main {
                     }
                     //add member
                     else if (choice.equals("2") && role == 0) {
-                        System.out.print("===== Add Member =====\nEnter Firstname: ");
+                        System.out.print("\n===== Add Member =====\nEnter Firstname: ");
                         String firstname = input.next();
                         System.out.print("Enter Lastname: ");
                         String lastname = input.next();
@@ -290,23 +329,22 @@ public class Main {
                         }
                         else {
                             //Generate new member
-                            Member newMember = new Member(String.valueOf(getLatestID(members)), firstname, lastname, inputEmail, generatePassword(), phoneNumber, "0");
+                            Member newMember = new Member(String.valueOf(getLatestID()), firstname, lastname, inputEmail, generatePassword(), phoneNumber, "0");
                             members.add(newMember);
                             System.out.println("Added member successfully!");
                             System.out.println(newMember.getFirstname() + "'s Password is " + newMember.getPassword());
                             //write all member to file
                             try (FileWriter fileWriter = new FileWriter("src/MEMBER.txt", true)) {
                                 fileWriter.write("\n" + newMember.id + "\t" + newMember.Firstname + "\t" + newMember.Lastname + "\t" + newMember.Email + "\t" + newMember.rawPassword + "\t" + newMember.PhoneNumber + "\t" + newMember.point);
-                            }
-                            catch (IOException e) {
+                            } catch (IOException e) {
                                 System.out.println("!!! Error: Cannot write to file !!!");
                             }
                         }
                     }
                     //order product
                     else if (choice.equals("2")) {
-                        System.out.println("=========== SE STORE's Products ===========");
-                        printItem(products, role);
+                        System.out.println("\n=========== SE STORE's Products ===========");
+                        printItem(products);
                         //create cart
                         ArrayList<Product> charts = new ArrayList<>();
                         System.out.print("""
@@ -318,6 +356,7 @@ public class Main {
                         while (true) {
                             System.out.print("Enter : ");
                             String orderChoice = input.next();
+                            //Instruction
                             if (orderChoice.equals("1")) {
                                 System.out.println("""
                                         How to Order:
@@ -327,9 +366,11 @@ public class Main {
                                         • To Adjust Quantity:
                                         \t+ to add more items: 1 +50 (Adds 50 more chips)
                                         \t- to reduce items: 1 -50 (Removes 50 chips)""");
-                            } else if (orderChoice.equals("2")) {
+                            }
+                            //Order Product
+                            else if (orderChoice.equals("2")) {
                                 System.out.println("=========== SE STORE's Products ===========");
-                                printItem(products, role);
+                                printItem(products);
                                 input.nextLine();
                                 while (true) {
                                     System.out.print("Enter : ");
@@ -422,10 +463,22 @@ public class Main {
                                     }
                                     System.out.println("Your cart has been saved!");
                                 }
+                                //update product quantity
+                                for (Product chart : charts) {
+                                    for (Product product : products) {
+                                        if (chart.getId().equals(product.getId())) {
+                                            product.setQuantity(chart.getQuantity(), '-');
+                                        }
+                                    }
+                                }
+                                writeProducts(products);
                                 break;
-                            } else if (orderChoice.equalsIgnoreCase("q")) {
+                            }
+                            //exit
+                            else if (orderChoice.equalsIgnoreCase("q")) {
                                 break;
-                            } else {
+                            }
+                            else {
                                 System.out.println("!!! Error: Input only 1-2 or Q for exit !!!");
                             }
                         }
@@ -503,7 +556,7 @@ public class Main {
                         while (true) {
                             try {
                                 System.out.println("===== SE STORE's Product =====");
-                                printItem(products, role);
+                                printItem(products);
                                 System.out.print("Type Product Number, You want to edit or Press Q to Exit\n" +
                                         "Select (1-" + products.size() + ") : ");
                                 String productChoice = input.next();
@@ -541,23 +594,16 @@ public class Main {
                                         else {
                                             try {
                                                 selectedProduct.replaceQuantity(Integer.parseInt(newQuantity));
-                                            } catch (Exception e) {
+                                            }
+                                            catch (Exception e) {
                                                 System.out.println("Error! - Your Information are Incorrect!");
                                                 break;
                                             }
-
                                         }
                                     }
                                     products.set(Integer.parseInt(productChoice) - 1, selectedProduct);
                                     //write all product to file
-                                    try (FileWriter fileWriter = new FileWriter("src/PRODUCT.txt")) {
-                                        for (Product product : products) {
-                                            fileWriter.write(product.getId() + "\t" + product.getName() + "\t" + product.getStringPrice() + "\t" + product.getQuantity() + "\t" + product.getType() + "\n");
-                                        }
-                                    } catch (Exception e) {
-                                        System.out.println("!!! Error: Cannot write to file !!!");
-                                    }
-                                    System.out.println("Success - " + selectedProduct.getName() + " has been updated!");
+                                    writeProducts(selectedProduct);
                                 }
                             } catch (Exception e) {
                                 System.out.println("!!! Error: Input only 1-" + products.size() + " or Q for exit !!!");
@@ -576,7 +622,9 @@ public class Main {
                 System.out.println("===== SE STORE =====\nThank you for using our service :3");
                 break;
             }
-            else { System.out.println("!!! Error: Input only 1-2 !!!"); }
+            else {
+                System.out.println("!!! Error: Input only 1-2 !!!");
+            }
         }
     }
 }

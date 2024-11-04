@@ -3,9 +3,9 @@ import java.text.DecimalFormat;
 public class Product {
     private final String id;
     private String name;
-    private final double price;
+    private double price;
     private int quantity;
-    private final String type;
+    private String type;
 
     public Product(String id, String name, String price, String quantity, String type) {
         this.id = id;

@@ -60,9 +60,7 @@ public class Member {
         return Lastname.charAt(0) + ". " + Firstname;
     }
 
-    public String getPhoneNumber() {
-        return PhoneNumber.substring(0, 3) + "-" + PhoneNumber.substring(3,6) + "-" + PhoneNumber.substring(6);
-    }
+    public String getPhoneNumber() { return PhoneNumber.substring(0, 3) + "-" + PhoneNumber.substring(3,6) + "-" + PhoneNumber.substring(6); }
 
     public String getPoint(){
         String[] parts = point.split("\\.");
@@ -81,7 +79,5 @@ public class Member {
         return Password;
     }
 
-    public boolean checkPassword(String password) {
-        return this.Password.equals(password);
-    }
+    public boolean checkPassword(String password) { return this.Password.equals(password); }
 }
