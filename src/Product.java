@@ -88,8 +88,7 @@ public class Product {
         if (i < 0) {
             System.out.println("Notice: Quantity can't be negative. Set to 0.");
             this.quantity = 0;
-        }
-        else {
+        } else {
             this.quantity = i;
         }
     }
@@ -105,8 +104,10 @@ public class Product {
             }
         }
     }
-
-    public void setQuantity(int i, char operator, int limit) {
+    //set quantity with limit
+    public void setQuantity(String q, int limit) {
+        int i = Integer.parseInt(q.substring(1));
+        char operator = q.charAt(0);
         if (operator == '+') {
             if (quantity + i <= limit) {
                 if (quantity == limit) {

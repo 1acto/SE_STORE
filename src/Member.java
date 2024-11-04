@@ -19,11 +19,11 @@ public class Member {
         this.point = point;
     }
 
-    boolean check(String email,String password){
+    boolean check(String email, String password) {
         return this.Password.equals(password) && this.Email.equals(email);
     }
 
-    public String decryptPassword(String password){
+    public String decryptPassword(String password) {
         return String.valueOf(password.charAt(9)) +
                 password.charAt(10) +
                 password.charAt(13) +
@@ -36,7 +36,7 @@ public class Member {
         return Firstname;
     }
 
-    public String getId(){
+    public String getId() {
         return id;
     }
 
@@ -48,7 +48,7 @@ public class Member {
         return Email;
     }
 
-    public String censorEmail(){
+    public String censorEmail() {
         String[] parts = Email.split("@");
         String[] censored = new String[2];
         censored[0] = parts[0].substring(0, 2) + "***";
@@ -60,9 +60,11 @@ public class Member {
         return Lastname.charAt(0) + ". " + Firstname;
     }
 
-    public String getPhoneNumber() { return PhoneNumber.substring(0, 3) + "-" + PhoneNumber.substring(3,6) + "-" + PhoneNumber.substring(6); }
+    public String getPhoneNumber() {
+        return PhoneNumber.substring(0, 3) + "-" + PhoneNumber.substring(3, 6) + "-" + PhoneNumber.substring(6);
+    }
 
-    public String getPoint(){
+    public String getPoint() {
         String[] parts = point.split("\\.");
         return parts[0];
     }
@@ -79,5 +81,7 @@ public class Member {
         return Password;
     }
 
-    public boolean checkPassword(String password) { return this.Password.equals(password); }
+    public boolean checkPassword(String password) {
+        return this.Password.equals(password);
+    }
 }
